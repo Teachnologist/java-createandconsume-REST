@@ -6,6 +6,17 @@
 </head>
 <body>
 <p th:text="'Hello, ' + ${name} + '!'" />
-<p th:text="'Quote: ' + ${quote} + '!'" />
+
+<table >
+<tr th:each="data, iterstat: ${list}">
+    <td th:text="${data.address}" th:id="|td${iterstat.index}|"></td>
+    <td th:text="${data.latitude}" th:id="|td${iterstat.index}|"></td>
+    <td th:text="${data.longitude}" th:id="|td${iterstat.index}|"></td>
+
+    </tr>
+</table>
+
+
+
 </body>
 </html>

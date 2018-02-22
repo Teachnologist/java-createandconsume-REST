@@ -18,6 +18,14 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
+import org.json.*;
+
+import java.util.HashMap;
+import java.util.Map;
+import java.util.List;
+import java.util.ArrayList;
+
+
 @Controller
 public class ConsumeController {
     //Quote quot1 = new Quote();
@@ -47,16 +55,45 @@ public class ConsumeController {
 
             };
             String responseBody = httpclient.execute(httpget, responseHandler);
-            System.out.println("----------------------------------------");
-            System.out.println(responseBody);
+            JSONArray list = new JSONArray(responseBody); //Convert String to JSON Object
+            System.out.println("---------------response body-------------------------");
+           System.out.println(responseBody);
+            System.out.println("-------------------response body end---------------------");
+      //      JSONArray tokenList = result.getJSONArray("Value");
+            int len = list.length();
+           // String[] test = new String[len];
+            List<Map<String, String>> test = new ArrayList<Map<String, String>>();
+
+            for(int i = 0; i<len;i++){
+                System.out.println("-------------------json body in loop index: "+i+"---------------------");
+                HashMap<String, String> map = new HashMap<>();
+                JSONObject obj = list.getJSONObject(i);
+
+                System.out.println(obj);
+                System.out.println("ADDRESS: "+obj.getString("address"));
+                JSONObject location = obj.getJSONObject("location");
+                JSONArray coordinates = location.getJSONArray("coordinates");
+                String index0 = coordinates.getString(0);
+                model.addAttribute("name", index0);
+                System.out.println("LAT: "+index0);
+
+                map.put("address",obj.getString("address"));
+                map.put("latitude",coordinates.getString(0));
+                map.put("longitude",coordinates.getString(1));
+                test.add(map);
+            }
+
+            model.addAttribute("list", test);
+            System.out.println("-------------------json body end---------------------");
             httpclient.close();
+            return "consume";
         } catch(Exception e){
-            System.out.println("******************");
+            System.out.println("*********EXCEPTION*********");
             System.out.println(e);
         }finally {
            // httpclient.close();
         }
-
         return "consume";
+
     }
 }
